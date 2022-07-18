@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\View\ApiViewController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,6 +14,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [ApiViewController::class, 'landing']);
+Route::get('/login', [ApiViewController::class, 'login']);
+
+Route::post('/login', [ApiViewController::class, 'handleLogin']);
