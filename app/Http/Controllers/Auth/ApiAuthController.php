@@ -9,39 +9,31 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
-use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
 
 class ApiAuthController extends Controller
 {
     public function login(Request $req) {
-        $req = $req->all();
-        $validator = Validator::make($req, [
-            'username' => 'required|string|max:255|exists:users',
+        $validator = Validator::make($req->all(), [
+            'username' => 'required|string|max:255',
             'password' => 'required|string|min:6',
         ]);
         if ($validator->fails())
         {
             return response(['errors'=>$validator->errors()->all()], 422);
         }
-        
-        JWTAuth::factory()->setTTL(60);
-        $token = Auth::attempt($req);
-        if (!$token) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Unauthorized',
-            ], 401);
-        }
 
-        $user = Auth::user();
-        return response()->json([
-            'status' => 'success',
-            'user' => $user,
-            'authorization' => [
-                'token' => $token,
-                'type' => 'bearer',
-            ]
-        ]);
+        $user = User::where('username', $req->username)->first();
+        if ($user) {
+            if (Hash::check($req->password, $user->password)) {
+                
+                $response['user'] = $user;
+                $response['token'] = $user->createToken('TokenHotel')->plainTextToken;
+                return response($response, 200);
+            }
+        } else {
+            $response = ["message" =>'Unauthenticated'];
+            return response($response, 422);
+        }
 
     }
 
@@ -56,42 +48,19 @@ class ApiAuthController extends Controller
             return response(['errors'=>$validator->errors()->all()], 422);
         }
 
-        $user = User::create([
-            'name' => $req->name,
-            'email' => $req->email,
-            'password' => Hash::make($req->password),
-        ]);
+        $request['password']=Hash::make($req['password']);
 
-        $token = Auth::login($user);
-        return response()->json([
-            'status' => 'success',
-            'message' => 'User created successfully',
-            'user' => $user,
-            'authorisation' => [
-                'token' => $token,
-                'type' => 'bearer',
-            ]
-        ]);
+        $user = User::create($req->toArray());
+        $token = $user->createToken('TokenHotel')->plainTextToken;
+        $response = ['user'=>$user,'token' => $token];
+        
+        return response($response, 200);
     }
 
-    public function logout()
-    {
-        Auth::logout();
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Successfully logged out',
-        ]);
-    }
-
-    public function refresh()
-    {
-        return response()->json([
-            'status' => 'success',
-            'user' => Auth::user(),
-            'authorisation' => [
-                'token' => Auth::refresh(),
-                'type' => 'bearer',
-            ]
-        ]);
+    public function logout (Request $request) {
+        $token = $request->user()->token();
+        $token->revoke();
+        $response = ['message' => 'You have been successfully logged out!'];
+        return response($response, 200);
     }
 }
