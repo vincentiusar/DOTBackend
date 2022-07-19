@@ -76,7 +76,7 @@
         <div class='mt-8 mx-10'>
             <div class='flex justify-between'>
                 <h3 class='text-lg font-semibold mb-2'>Room Details</h3>
-                <a href="#">
+                <a href="/addroom/{{ $hotel['id'] }}">
                     <div class='btn'>Add Room</div>
                 </a>
             </div>
@@ -93,8 +93,12 @@
                             </div>
                             <p class='mt-2'>{{ $item['description'] }}</p>
                             <div class='flex gap-x-4 justify-end mt-20'>
-                                <div class='btn btn-outline btn-sm'>Delete</div>
-                                <a href='#'>
+                                <form action="/{{ $hotel['id'] }}/room/{{ $item['id'] }}" method="POST">
+                                    @csrf
+                                    @method("delete")
+                                    <button class='btn btn-outline btn-sm' type="submit">Delete</button>
+                                </form>
+                                <a href='/updateroom/{{ $item['id'] }}'>
                                     <div class='btn btn-outline btn-sm'>Edit</div>
                                 </a>
                             </div>

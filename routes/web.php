@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\RoomDetails\ApiRoomController;
 use App\Http\Controllers\View\ApiViewController;
 use Illuminate\Support\Facades\Route;
 
@@ -27,5 +28,8 @@ Route::post('/hotel', [ApiViewController::class, 'addHotel']);
 Route::put('/hotel', [ApiViewController::class, 'updateHotel']);
 Route::delete('/hotel/{hotelId}', [ApiViewController::class, 'deleteHotel']);
 
-Route::group(['middleware' => ['auth:sanctum']], function () {
-});
+Route::get('/updateroom/{roomId}', [ApiViewController::class, 'viewUpdateRoom']);
+Route::get('/addroom/{hotelId}', [ApiViewController::class, 'viewAddRoom']);
+Route::post('/room', [ApiViewController::class, 'addRoom']);
+Route::put('/room', [ApiViewController::class, 'updateRoom']);
+Route::delete('{hotelId}/room/{roomId}', [ApiViewController::class, 'deleteRoom']);

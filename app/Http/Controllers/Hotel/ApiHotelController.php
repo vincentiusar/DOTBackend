@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use App\Models\Hotel;
 use App\Models\RoomDetail;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\Rule;
 
@@ -17,7 +18,7 @@ class ApiHotelController extends Controller
 
         foreach ($hotel as $h) {
             $h['capacity'] = 0;
-            $rooms = RoomDetail::where('hotel_id', $h['id'])->get();
+            $rooms = json_decode(DB::table("RoomDetails")->where('hotel_id', $h['id'])->get(), true);
             foreach ($rooms as $r) {
                 $h['capacity'] += $r['capacity'];
             }
@@ -51,22 +52,22 @@ class ApiHotelController extends Controller
             return response(['errors'=>$validator->errors()->all()], 422);
         }
 
+        Hotel::where('id', $request->id)->update([
+            'name' => $request['name'],
+            'description' => $request['description'],
+            'lat' => $request['lat'] == NULL ? "" : $request['lat'],
+            'lot' => $request['lot'] == NULL ? "" : $request['lot'],
+            'image' => $request['image'] == NULL ? "" : $request['image']
+        ]);
+
         $hotel = Hotel::where('id', $request->id)->first();
-        $hotel['name'] = $request['name'];
-        $hotel['description'] = $request['description'];
-        $hotel['lat'] = $request['lat'] == NULL ? "" : $request['lat'];
-        $hotel['lot'] = $request['lot'] == NULL ? "" : $request['lot'];
-        $hotel['image'] = $request['image'] == NULL ? "" : $request['image'];
-
-        $hotel->save();
-
         return response($hotel, 200);
     }
 
     public function getOneHotel($hotelid) {
         $hotel = Hotel::where('id', $hotelid)->first();
 
-        $rooms = RoomDetail::where('hotel_id', $hotelid)->get();
+        $rooms = json_decode(DB::table('RoomDetails')->where('hotel_id', $hotelid)->get(), true);
         $hotel['capacity'] = 0;
 
         foreach ($rooms as $r) {
