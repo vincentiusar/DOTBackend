@@ -33,3 +33,5 @@ Route::get('/addroom/{hotelId}', [ApiViewController::class, 'viewAddRoom']);
 Route::post('/room', [ApiViewController::class, 'addRoom']);
 Route::put('/room', [ApiViewController::class, 'updateRoom']);
 Route::delete('{hotelId}/room/{roomId}', [ApiViewController::class, 'deleteRoom']);
+
+Route::get('/hotel/search/param', [ApiViewController::class, 'searchHotel']);

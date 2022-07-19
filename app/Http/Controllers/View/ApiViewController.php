@@ -245,4 +245,15 @@ class ApiViewController extends Controller
 
         return redirect('/hotel/'.$hotelId);
     }
+
+    public function searchHotel(Request $request) {
+        if (!$this->tokenCheck($request)) return redirect('/login');
+        try {
+            $hotels = Hotel::whereRaw('lower(name) like (?) ', ['%'.strtolower($request['name']).'%'])->get();
+        } catch (Exception $e) {
+            report($e);
+        }
+
+        return response()->view('/hotels', ['hotels' => $hotels]);
+    }
 }
