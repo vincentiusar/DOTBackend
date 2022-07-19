@@ -15,6 +15,11 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', [ApiViewController::class, 'landing']);
-Route::get('/login', [ApiViewController::class, 'login']);
 
+Route::get('/login', [ApiViewController::class, 'login']);
 Route::post('/login', [ApiViewController::class, 'handleLogin']);
+
+Route::get('/hotel', [ApiViewController::class, 'getHotels']);
+Route::get('/hotel/{hotelId}', [ApiViewController::class, 'getHotelById']);
+Route::group(['middleware' => ['auth:sanctum']], function () {
+});

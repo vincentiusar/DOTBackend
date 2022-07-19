@@ -18,5 +18,5 @@ use Illuminate\Support\Facades\Auth;
 
 Route::post('/login', [ApiAuthController::class, 'login']);
 
-Route::group(['middleware' => ['auth:api']], function () {
+Route::group(['middleware' => ['auth:sanctum']], function () {
 });
