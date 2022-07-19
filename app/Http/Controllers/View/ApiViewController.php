@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class ApiViewController extends Controller
 {
@@ -21,6 +22,19 @@ class ApiViewController extends Controller
 
     public function login() {
         return response()->view('login');
+    }
+
+    public function viewAddHotel(Request $request) {
+        return response()->view('addHotel');
+    }
+
+    public function viewUpdateHotel($hotelId) {
+        try {
+            $hotel = Hotel::where('id', $hotelId)->first();
+        } catch (Exception $e) {
+            report($e);
+        }
+        return response()->view('updateHotel', ['hotel' => $hotel]);
     }
 
     public function handleLogin(Request $request) {
@@ -70,5 +84,57 @@ class ApiViewController extends Controller
         }
 
         return response()->view('/hotel', ['hotel' => $hotel, 'rooms' => $rooms]);
+    }
+
+    public function addHotel(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255|unique:hotels',
+            'description' => 'required|string',
+        ]);
+        if ($validator->fails())
+        {
+            return response(['errors'=>$validator->errors()->all()], 422);
+        }
+
+        $request['image'] = 'https://www.ahstatic.com/photos/5451_ho_00_p_1024x768.jpg';
+        $hotel = Hotel::create($request->toArray());
+
+        return redirect('/hotel');
+    }
+
+    public function updateHotel(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',Rule::unique('hotels')->ignore($request->id),
+        ]);
+        if ($validator->fails()) {
+            return response(['errors'=>$validator->errors()->all()], 422);
+        }
+
+        $hotel = Hotel::where('id', $request->id)->first();
+        $hotel['name'] = $request['name'];
+        $hotel['description'] = $request['description'];
+        $hotel['lat'] = $request['lat'] == NULL ? "" : $request['lat'];
+        $hotel['lot'] = $request['lot'] == NULL ? "" : $request['lot'];
+
+        $hotel->save();
+
+        return redirect('/hotel/'.$hotel['id']);
+    }
+
+    public function deleteHotel($hotelId) {
+        $validator = Validator::make(['id' => $hotelId], [
+            'id' => 'required|integer|exists:hotels',
+        ]);
+        if ($validator->fails()) {
+            return response(['errors'=>$validator->errors()->all()], 422);
+        }
+        
+        $hotel = Hotel::where('id', $hotelId)->first();
+        $response["hotel"] = $hotel["name"];
+        $response["message"] = "Hotel Deleted {$hotel['name']}";
+
+        $hotel->delete();
+
+        return redirect('/hotel');
     }
 }

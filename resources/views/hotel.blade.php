@@ -44,7 +44,7 @@
         <div class='bg-base-100 mx-10 mt-4 shadow overflow-hidden sm:rounded-lg'>
             <div class='p-4 sm:px-6 flex justify-between'>
                 <h3 class='text-lg font-semibold'>{{ $hotel['name'] }}</h3>
-                <a href="#">
+                <a href="/updatehotel/{{ $hotel['id'] }}">
                     <button class='btn btn-outline btn-sm'>Edit</button>
                 </a>
             </div>
