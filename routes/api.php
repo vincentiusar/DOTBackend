@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\ApiAuthController;
+use App\Http\Controllers\Hotel\ApiHotelController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
@@ -19,4 +20,5 @@ use Illuminate\Support\Facades\Auth;
 Route::post('/login', [ApiAuthController::class, 'login']);
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
+    Route::get('/hotel', [ApiHotelController::class, 'getAllHotels']);
 });

@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use App\Models\Hotel;
 use App\Models\RoomDetail;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\Rule;
 
@@ -17,7 +18,7 @@ class ApiHotelController extends Controller
 
         foreach ($hotel as $h) {
             $h['capacity'] = 0;
-            $rooms = RoomDetail::where('hotel_id', $h['id'])->get();
+            $rooms = json_decode(DB::table("RoomDetails")->where('hotel_id', $h['id'])->get(), true);
             foreach ($rooms as $r) {
                 $h['capacity'] += $r['capacity'];
             }
@@ -66,7 +67,7 @@ class ApiHotelController extends Controller
     public function getOneHotel($hotelid) {
         $hotel = Hotel::where('id', $hotelid)->first();
 
-        $rooms = RoomDetail::where('hotel_id', $hotelid)->get();
+        $rooms = json_decode(DB::table('RoomDetails')->where('hotel_id', $hotelid)->get(), true);
         $hotel['capacity'] = 0;
 
         foreach ($rooms as $r) {
