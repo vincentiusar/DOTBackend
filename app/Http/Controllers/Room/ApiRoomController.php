@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\RoomDetails;
+namespace App\Http\Controllers\Room;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -17,18 +17,18 @@ class ApiRoomController extends Controller
 
     public function getOneRoomById(Request $request,$id){
         $request['id'] = $id;
-        $validator = Validator::make($request->all(), [ 'id' => 'required|integer|exists:room_details']);
+        $validator = Validator::make($request->all(), [ 'id' => 'required|integer|exists:RoomDetails']);
         if ($validator->fails())
         {
             return response(['errors'=>$validator->errors()->all()], 422);
         }
 
-        $room = json_decode(DB::table('RoomDetails')->where('id', $id)->first());
+        $room = json_decode(DB::table('RoomDetails')->where('id', $id)->get(), true)[0];
 
         return response($room, 200);
     }
 
-    public function addRoomDetails(Request $request){
+    public function addRoom(Request $request){
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'price' => 'required|string',
@@ -41,14 +41,14 @@ class ApiRoomController extends Controller
         {
             return response(['errors'=>$validator->errors()->all()], 422);
         }
-        $roomDetails = json_decode(DB::table('RoomDetails')->create($request->toArray()));
-
+        $roomDetails = json_decode(DB::table('RoomDetails')->insertGetId($request->toArray()));
+        $roomDetails = json_decode(DB::table('RoomDetails')->where('id', $roomDetails)->get(), true)[0];
         return response($roomDetails,200);
     }
 
-    public function updateRoomDetails(Request $request) {
+    public function updateRoom(Request $request) {
         $validator = Validator::make($request->all(), [
-            'id' => 'required|integer|exists:room_details,id',
+            'id' => 'required|integer|exists:RoomDetails,id',
             'name' => 'required|string|max:255',
             'price' => 'required|string',
             'capacity' => 'required|integer',
@@ -60,32 +60,33 @@ class ApiRoomController extends Controller
         {
             return response(['errors'=>$validator->errors()->all()], 422);
         }
-        $roomDetails = json_decode(DB::table('RoomDetails')->where('id', $request->id)->first());
+        $roomDetails = json_decode(DB::table('RoomDetails')->where('id', $request->id)
+                ->update([
+                    'name' => $request['name'],
+                    'price' => $request['price'],
+                    'description' => $request['description'],
+                    'image' => $request['image'],
+                ]));
 
-        $roomDetails['name']=$request['name'];
-        $roomDetails['price']=$request['price'];
-        $roomDetails['description']=$request['description'];
-        $roomDetails['image']=$request['image'];
-
-        $roomDetails->save();
+        $roomDetails = json_decode(DB::table('RoomDetails')->where('id', $request['id'])->get(), true)[0];
 
         return response($roomDetails, 200);
     }
 
-    public function deleteRoomDetails(Request $request) {
+    public function deleteRoom(Request $request) {
 
         $validator = Validator::make($request->all(), [
-            'id' => 'required|integer|exists:room_details',
+            'id' => 'required|integer|exists:RoomDetails',
         ]);
         if ($validator->fails()) {
             return response(['errors'=>$validator->errors()->all()], 422);
         }
         
-        $room = json_decode(DB::table('RoomDetails')->where('id', $request->id)->first());
+        $room = json_decode(DB::table('RoomDetails')->where('id', $request->id)->get(), true)[0];
         $response["room"] = $room["name"];
         $response["message"] = "Room Deleted {$room['name']}";
 
-        $room->delete();
+        DB::table('RoomDetails')->where('id', $request->id)->delete();
 
         return response($response, 200);
     }

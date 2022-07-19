@@ -52,15 +52,15 @@ class ApiHotelController extends Controller
             return response(['errors'=>$validator->errors()->all()], 422);
         }
 
+        Hotel::where('id', $request->id)->update([
+            'name' => $request['name'],
+            'description' => $request['description'],
+            'lat' => $request['lat'] == NULL ? "" : $request['lat'],
+            'lot' => $request['lot'] == NULL ? "" : $request['lot'],
+            'image' => $request['image'] == NULL ? "" : $request['image']
+        ]);
+
         $hotel = Hotel::where('id', $request->id)->first();
-        $hotel['name'] = $request['name'];
-        $hotel['description'] = $request['description'];
-        $hotel['lat'] = $request['lat'] == NULL ? "" : $request['lat'];
-        $hotel['lot'] = $request['lot'] == NULL ? "" : $request['lot'];
-        $hotel['image'] = $request['image'] == NULL ? "" : $request['image'];
-
-        $hotel->save();
-
         return response($hotel, 200);
     }
 
