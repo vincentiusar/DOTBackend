@@ -41,10 +41,14 @@
                 </ul>
             </div>
         </div>
-        <div className='container mx-auto px-10 py-4 font-semibold'>
-            <h3 className='text-lg mb-4'>Hotels</h3>
-                <div className='overflow-x-auto w-full'>
-                    <table className='table w-full'>
+        <div class='container mx-auto px-10 py-4 font-semibold'>
+            <h3 class='text-lg mb-4'>Hotels</h3>
+                <form action="/hotel/search/param" method="GET">
+                    <input type="text" name="name" id="name" class="rounded w-5/6 h-10 p-2 m-2" required>
+                    <button class='btn btn-outline btn-sm' type="submit">Search</button>
+                </form>
+                <div class='overflow-x-auto w-full'>
+                    <table class='table w-full'>
                         <thead>
                             <tr>
                                 <th>No</th>

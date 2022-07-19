@@ -27,6 +27,8 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::put('/hotel', [ApiHotelController::class, 'updateHotel']);
     Route::delete('/hotel', [ApiHotelController::class, 'deleteHotel']);
 
+    Route::get('/hotel/search/param', [ApiHotelController::class, 'searchHotel']);
+
     Route::get('/room/hotel/{hotelid}', [ApiRoomController::class, 'getAllRoomsByHotelId']);
     Route::get('/room/{id}', [ApiRoomController::class, 'getOneRoomById']);
     Route::post('/room', [ApiRoomController::class, 'addRoom']);

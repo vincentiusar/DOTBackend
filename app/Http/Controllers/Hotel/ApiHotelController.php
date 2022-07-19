@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use App\Models\Hotel;
 use App\Models\RoomDetail;
+use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\Rule;
@@ -92,5 +93,15 @@ class ApiHotelController extends Controller
         $hotel->delete();
 
         return response($response, 200);
+    }
+
+    public function searchHotel(Request $request) {
+        try {
+            $hotels = Hotel::whereRaw('lower(name) like (?) ', ['%'.strtolower($request['name']).'%'])->get();
+        } catch (Exception $e) {
+            report($e);
+        }
+
+        return response($hotels, 200);
     }
 }
