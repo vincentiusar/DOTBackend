@@ -28,3 +28,11 @@ concurrently -> Menjalankan 2 command secara bersamaan (php artisan serv dan vit
 deployment link : -- soon --
 
 Berpindah ke /login untuk melakukan login dan mencoba aplikasi.
+
+Sebelum run pastikan sudah melakukan hal berikut:
+
+- Membuat database postgresql dengan nama dan password yang disesuaikan dan diletakan dalam .env
+- Menginstall semua depedencies laravel (composer install)
+- Menginstall semua depedencies npm (npm install)
+
+Run command -> npm run dev
